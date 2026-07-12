@@ -1,0 +1,17 @@
+{
+  "name": "Azalea",
+  "short_name": "Azalea",
+  "description": "The free media system that cares.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#3b82f6",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
