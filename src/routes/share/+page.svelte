@@ -37,7 +37,7 @@
   <meta
     property="og:description"
     content={albumArtist
-      ? `${albumArtist} — shared via Azalea`
+      ? `${albumArtist} - shared via Azalea`
       : "Shared via Azalea"}
   />
   {#if ogImageUrl}
