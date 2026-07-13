@@ -63,6 +63,7 @@
 	<link rel="icon" href="/favicon.svg" />
 	<link rel="manifest" href="/manifest.json" />
 	<meta name="darkreader-lock">
+	<meta name="theme-color" content="#2e76ff">
 </svelte:head>
 
 {#if !conn.connected && conn.error}
