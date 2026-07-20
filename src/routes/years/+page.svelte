@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { getAlbumList, getArtists, getAllSongs, getCoverArtUrl } from '$lib/api';
+	import CantConnect from '$lib/components/CantConnect.svelte';
 	import { titleEnding } from '$lib/stores/settings.svelte';
 	import { getCurrentTrackId, isPlaying, playNow, queueSongsEnd } from '$lib/stores/player.svelte';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
@@ -98,6 +99,8 @@
 		}
 	});
 </script>
+
+<CantConnect />
 
 <svelte:head>
 	<title>Years{titleEnding}</title>

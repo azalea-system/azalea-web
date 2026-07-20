@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { getPlaylists, createPlaylist, deletePlaylist } from '$lib/api';
+	import CantConnect from '$lib/components/CantConnect.svelte';
 	import { titleEnding } from '$lib/stores/settings.svelte';
 	import { ListMusic, Plus, Download } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
@@ -58,6 +59,8 @@
 		}
 	}
 </script>
+
+<CantConnect />
 
 <svelte:head>
 	<title>Playlists{titleEnding}</title>

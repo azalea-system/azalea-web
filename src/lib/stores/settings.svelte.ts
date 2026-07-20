@@ -16,7 +16,7 @@ function saveSetting<T>(key: string, value: T) {
 }
 
 export const appName = 'Azalea';
-export const version = '1.0a';
+export const version = '1.3a';
 export const titleEnding = ` - ${appName}`;
 let _serverUrl = $state(loadSetting('serverUrl', 'http://localhost:3443'));
 let _proxyEnabled = $state(loadSetting('proxyEnabled', false));

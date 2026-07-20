@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { getAlbumList, getRandomSongs, getBase, downloadOnServer, toggleStar } from '$lib/api';
+	import CantConnect from '$lib/components/CantConnect.svelte';
 	import {
 		playNow,
 		getCurrentTrackId,
@@ -102,6 +103,8 @@
 		}
 	}
 </script>
+
+<CantConnect />
 
 <svelte:head>
 	<title>Home{titleEnding}</title>

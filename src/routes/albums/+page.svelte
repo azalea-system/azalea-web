@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { getAlbumList, getAlbum, getCoverArtUrl, getArtists } from '$lib/api';
+	import CantConnect from '$lib/components/CantConnect.svelte';
 	import { getCurrentTrackId, isPlaying } from '$lib/stores/player.svelte';
 	import { Play, ListPlus, ListMusic, Copy, User } from '@lucide/svelte';
 	import { titleEnding } from '$lib/stores/settings.svelte';
@@ -58,6 +59,8 @@
 		}
 	});
 </script>
+
+<CantConnect />
 
 <svelte:head>
 	<title>Albums{titleEnding}</title>

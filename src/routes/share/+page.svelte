@@ -1,21 +1,39 @@
 <script lang="ts">
   import { page } from "$app/stores";
+  import { onMount } from "svelte";
   import { titleEnding } from "$lib/stores/settings.svelte";
   import { Button } from "$lib/components/ui/button/index.js";
   import { ExternalLink, Copy, Check, Plus } from "@lucide/svelte";
   import { toast } from "svelte-sonner";
+  import { fetchDiscogsStreamingLinks } from "$lib/discogs";
 
-  let albumTitle = $derived($page.url.searchParams.get("albumTitle") ?? "");
-  let albumArtist = $derived($page.url.searchParams.get("albumArtist") ?? "");
-  let coverArtUrl = $derived($page.url.searchParams.get("coverArtUrl") ?? "");
+  let { data } = $props();
+
+  let musicBrainzId = $derived($page.url.searchParams.get("i") ?? "");
+  let albumTitle = $derived(data.albumTitle);
+  let albumArtist = $derived(data.albumArtist);
+  let externalLinks = $derived(data.externalLinks as Record<string, string>);
+  let streamingLinks = $state(data.streamingLinks as Record<string, string>);
+
   let youtubeMusicLink = $derived(
-    $page.url.searchParams.get("youtubeMusicLink") ?? "",
+    $page.url.searchParams.get("y") ?? streamingLinks.youtubeMusic ?? "",
   );
-  let spotifyLink = $derived($page.url.searchParams.get("spotifyLink") ?? "");
+  let spotifyLink = $derived(
+    $page.url.searchParams.get("s") ?? streamingLinks.spotify ?? "",
+  );
+  let appleMusicLink = $derived(
+    $page.url.searchParams.get("p") ?? streamingLinks.appleMusic ?? "",
+  );
+
+  let coverArtUrl = $derived(
+    musicBrainzId
+      ? `https://coverartarchive.org/release-group/${musicBrainzId}/front-250`
+      : "",
+  );
 
   let ogImageUrl = $derived(
-    coverArtUrl
-      ? `${$page.url.origin}/api/og-image?coverArt=${encodeURIComponent(coverArtUrl)}`
+    musicBrainzId
+      ? `${$page.url.origin}/api/og-image?mbid=${encodeURIComponent(musicBrainzId)}`
       : "",
   );
 
@@ -28,6 +46,17 @@
       if (copiedField === label) copiedField = null;
     }, 2000);
   }
+
+  onMount(() => {
+    if (Object.keys(streamingLinks).length > 0) return;
+    const discogsUrl = externalLinks["Discogs"];
+    if (!discogsUrl) return;
+    fetchDiscogsStreamingLinks(discogsUrl).then((links) => {
+      if (Object.keys(links).length > 0) {
+        streamingLinks = { ...streamingLinks, ...links };
+      }
+    });
+  });
 </script>
 
 <svelte:head>
@@ -191,9 +220,52 @@
               </Button>
             </div>
           {/if}
+          {#if appleMusicLink}
+            <div class="flex">
+              <Button
+                href={spotifyLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                variant="outline"
+                class="flex-1 justify-baseline gap-2 rounded-l-full! border-r-0"
+              >
+                  <img src="/apple-music.svg" alt="Apple Music Logo" class="h-4 w-4" />
+                Listen on Apple Music
+                <ExternalLink class="h-3.5 w-3.5 text-zinc-500" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                class="rounded-r-full! border-l-0"
+                onclick={() => copyToClipboard("spotify", spotifyLink)}
+              >
+                {#if copiedField === "spotify"}
+                  <Check class="h-4 w-4 text-green-500" />
+                {:else}
+                  <Copy class="h-4 w-4" />
+                {/if}
+              </Button>
+            </div>
+          {/if}
         </div>
       {:else if !albumTitle && !coverArtUrl}
         <p class="text-sm text-zinc-500">No album information provided.</p>
+      {/if}
+
+      {#if Object.keys(externalLinks).length > 0}
+        <div class="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-zinc-500">
+          {#each Object.entries(externalLinks) as [name, href]}
+            <a
+              {href}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hover:text-zinc-300 transition-colors"
+            >
+              {name.replace(/-\d+$/, "")}
+              <ExternalLink class="inline h-2.5 w-2.5" />
+            </a>
+          {/each}
+        </div>
       {/if}
     </div>
 

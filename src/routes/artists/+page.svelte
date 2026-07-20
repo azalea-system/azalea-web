@@ -3,6 +3,7 @@
 	import { titleEnding } from '$lib/stores/settings.svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { getArtists, getCoverArtUrl } from '$lib/api';
+	import CantConnect from '$lib/components/CantConnect.svelte';
 	import Artists from '$lib/components/Artists.svelte';
 	import type { ArtistsIndex, Artist } from '$lib/types';
 
@@ -63,6 +64,8 @@
 		}
 	});
 </script>
+
+<CantConnect />
 
 <svelte:head>
 	<title>Artists{titleEnding}</title>

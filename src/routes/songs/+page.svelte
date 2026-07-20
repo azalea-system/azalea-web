@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { getAllSongs, getArtists, getSongsWithLyrics, toggleStar } from '$lib/api';
+	import CantConnect from '$lib/components/CantConnect.svelte';
 	import { titleEnding, getFavouriteSongStyle } from '$lib/stores/settings.svelte';
 	import { getCurrentTrackId, isPlaying } from '$lib/stores/player.svelte';
 	import Songs from '$lib/components/Songs.svelte';
@@ -37,6 +38,8 @@
 		}
 	});
 </script>
+
+<CantConnect />
 
 <svelte:head>
 	<title>Songs{titleEnding}</title>
