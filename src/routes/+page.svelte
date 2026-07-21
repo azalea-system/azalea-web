@@ -138,11 +138,7 @@
 		</div>
 	{:else}
 		<section class="mb-10">
-			<div class="mb-4 flex items-center justify-between">
-				<h2 class="text-lg font-semibold text-zinc-100">New Releases</h2>
-				<a href="/albums" class="text-xs accent-text accent-hover-text">View all</a>
-			</div>
-			<Albums {albums} />
+			<Albums {albums} title="New Releases" viewAll={true} />
 		</section>
 
 		<section>

@@ -18,6 +18,7 @@
 	import type { Album } from '$lib/types';
 
 	type Props = {
+	    title?: string;
 		albums?: Album[];
 		viewMode?: 'grid' | 'list';
 		density?: 'compact' | 'normal' | 'spacious';
@@ -28,12 +29,14 @@
 	};
 
 	let {
+	    title = 'Albums',
 		albums = $bindable([]),
 		viewMode = $bindable('grid'),
 		density = $bindable('normal'),
 		sortMode = $bindable('date-desc'),
 		artistAlbumCount = new Map<string, number>(),
 		showSongCount = false,
+		viewAll = false,
 		oncontextmenu
 	}: Props = $props();
 
@@ -134,7 +137,12 @@
 </script>
 
 <div class="mb-6 flex items-center justify-between">
-	<h1 class="text-xl font-bold text-zinc-100">Albums</h1>
+    <div class="flex flex-col gap-2">
+        <h1 class="text-xl font-bold text-zinc-100">{title}</h1>
+    	{#if viewAll}
+    	    <a href="/albums" class="text-xs accent-text accent-hover-text">View all releases</a>
+    	{/if}
+    </div>
 	<div class="flex items-center gap-2">
 		<DropdownMenu.Root>
 			<DropdownMenu.Trigger>
