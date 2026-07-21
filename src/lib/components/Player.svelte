@@ -437,7 +437,7 @@
 			onclick={() => {
 				if (currentTrack) toggleStar(currentTrack);
 			}}
-			class="px-1 py-1 rounded-3xl! font-bold flex gap-1 justify-center items-center w-8 h-8 hover:bg-zinc-800"
+			class="px-1 py-1 rounded-3xl! font-bold flex gap-1 justify-center items-center w-8 h-8 hover:bg-zinc-800/10 hover:backdrop-blur-xl"
 		>
 			{#if favStyle === 'heart'}
 				<Heart class="w-4" fill={currentTrack?.starred ? 'currentColor' : 'none'} />
