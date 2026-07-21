@@ -105,7 +105,7 @@
 		seek(parseFloat(target.value));
 	}
 
-	
+
 	let plainLyrics = $state('');
 	let syncedLines = $state<{ time: number; text: string }[]>([]);
 	let showSynced = $state(true);
@@ -177,7 +177,7 @@
 		}
 	});
 
-	
+
 	let rafId: number | null = null;
 
 	$effect(() => {
@@ -199,7 +199,7 @@
 		};
 	});
 
-	
+
 	let displayedQueue = $derived(getDisplayedQueue());
 	let nextUp = $derived(getNextUp());
 	let queueLabel = $derived(getNextUpLabel());
@@ -207,7 +207,7 @@
 	let ctxMenu = $state<{
 		x: number;
 		y: number;
-		
+
 		items: { label: string; icon?: any; action: () => void }[];
 	} | null>(null);
 
@@ -220,7 +220,7 @@
 		ctxMenu = { x: e.clientX, y: e.clientY, items } as any;
 	}
 
-	
+
 	let touchStartY = $state(0);
 	let touchDeltaY = $state(0);
 	let isSwiping = $state(false);
@@ -268,7 +268,7 @@
 				out:fly={{ y: slideDir === 'down' ? '100%' : '-100%', duration: 200 }}
 				class="flex flex-1 flex-col"
 			>
-				
+
 				<div class="flex items-center justify-between px-4 pt-12 pb-2">
 					<button
 						onclick={onClose}
@@ -282,7 +282,7 @@
 				</div>
 
 				<div class="h-full">
-					
+
 					<div class="flex justify-center px-6 mt-4 mb-6">
 						<button
 							onclick={() => {
@@ -314,9 +314,9 @@
 					</div>
 				</div>
 
-				
+
 				<div class="flex flex-col">
-					
+
 					<div class="px-6 mb-4">
 						<p class="truncate text-lg font-semibold text-zinc-100">
 							{currentTrack?.title ?? 'No track playing'}
@@ -334,7 +334,7 @@
 						{/if}
 					</div>
 
-					
+
 					<div class="px-6 mb-6 flex gap-2 flex items-center justify-center">
 						<button
 							onclick={() => {
@@ -382,7 +382,7 @@
 						{/if}
 					</div>
 
-					
+
 					<div class="flex items-center gap-3 mb-8">
 						<span class="w-10 text-right text-xs tabular-nums text-zinc-500"
 							>{fmt(currentTime)}</span
@@ -400,7 +400,7 @@
 						<span class="w-10 text-left text-xs tabular-nums text-zinc-500">{fmt(duration)}</span>
 					</div>
 
-					
+
 					<div class="flex items-center justify-center pb-3 gap-8">
 						<button
 							onclick={toggleShuffleMode}
@@ -534,7 +534,7 @@
 				out:fly={{ y: slideDir === 'down' ? '100%' : '-100%', duration: 200 }}
 				class="flex min-h-0 flex-1 flex-col"
 			>
-				
+
 				<div class="flex items-center gap-4 border-b border-zinc-800 px-4 pt-12 pb-3">
 					<button
 						onclick={goBackToPlayer}
@@ -620,7 +620,7 @@
 				out:fly={{ y: slideDir === 'down' ? '100%' : '-100%', duration: 200 }}
 				class="flex flex-1 flex-col"
 			>
-				
+
 				<div class="flex items-center gap-4 border-b border-zinc-800 px-4 pt-12 pb-3">
 					<button
 						onclick={goBackToPlayer}

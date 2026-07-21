@@ -116,12 +116,33 @@
 	let dragOffsetY = $state(0);
 	let didDrag = $state(false);
 	let showHint = $state(true);
+	let lightboxIndex = $state(0);
+
+	let lightboxImages = $derived.by(() => {
+		const images: { id: string; type: string; label: string }[] = [];
+		if (album) {
+			images.push({ id: album.coverArt, type: 'front', label: 'Front Cover' });
+			if (album.extraCoverArt) {
+				for (const extra of album.extraCoverArt) {
+					const label =
+						extra.type === 'back'
+							? 'Back Cover'
+							: extra.type === 'booklet'
+								? 'Booklet'
+								: extra.type;
+					images.push({ id: extra.id, type: extra.type, label });
+				}
+			}
+		}
+		return images;
+	});
 
 	function openLightbox() {
 		showLightbox = true;
 		lightboxScale = 1;
 		offsetX = 0;
 		offsetY = 0;
+		lightboxIndex = 0;
 		showHint = true;
 	}
 
@@ -131,6 +152,26 @@
 
 	function closeLightbox() {
 		showLightbox = false;
+	}
+
+	function prevLightboxImage(e: Event) {
+		e.stopPropagation();
+		if (lightboxIndex > 0) {
+			lightboxIndex--;
+			lightboxScale = 1;
+			offsetX = 0;
+			offsetY = 0;
+		}
+	}
+
+	function nextLightboxImage(e: Event) {
+		e.stopPropagation();
+		if (lightboxIndex < lightboxImages.length - 1) {
+			lightboxIndex++;
+			lightboxScale = 1;
+			offsetX = 0;
+			offsetY = 0;
+		}
 	}
 
 	function toggleZoom(e: MouseEvent) {
@@ -374,34 +415,62 @@
 			}}
 			onwheel={dismissHint}
 		>
-			<div
-				role="img"
-				aria-label="Enlarged album cover"
-				class="cursor-grab overflow-hidden shadow-2xl"
-				style="transform: translate({offsetX}px, {offsetY}px) scale({lightboxScale}); {isDragging
-					? 'cursor: grabbing;'
-					: ''}"
-				onclick={(e) => {
-					e.stopPropagation();
-					if (didDrag) return;
-					toggleZoom(e);
-				}}
-				onwheel={(e) => {
-					dismissHint();
-					handleWheel(e);
-				}}
-				onmousedown={(e) => startDrag(e)}
-				onmousemove={(e) => doDrag(e)}
-				onmouseup={stopDrag}
-				onmouseleave={stopDrag}
-			>
-				<img
-					src={getCoverArtUrl(album!.coverArt, 2048)}
-					alt={album!.name}
-					class="block max-h-[90vh] max-w-[90vw] select-none rounded-none! object-contain"
-					draggable="false"
-				/>
+			<div class="flex items-center gap-4">
+				{#if lightboxImages.length > 1}
+					<button
+						onclick={prevLightboxImage}
+						disabled={lightboxIndex === 0}
+						class="shrink-0 rounded-full bg-zinc-800/80 p-2 text-zinc-300 transition-colors hover:bg-zinc-700 disabled:opacity-30 disabled:cursor-not-allowed"
+						aria-label="Previous image"
+					>
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+					</button>
+				{/if}
+				<div
+					role="img"
+					aria-label="Enlarged album cover"
+					class="cursor-grab overflow-hidden shadow-2xl"
+					style="transform: translate({offsetX}px, {offsetY}px) scale({lightboxScale}); {isDragging
+						? 'cursor: grabbing;'
+						: ''}"
+					onclick={(e) => {
+						e.stopPropagation();
+						if (didDrag) return;
+						toggleZoom(e);
+					}}
+					onwheel={(e) => {
+						dismissHint();
+						handleWheel(e);
+					}}
+					onmousedown={(e) => startDrag(e)}
+					onmousemove={(e) => doDrag(e)}
+					onmouseup={stopDrag}
+					onmouseleave={stopDrag}
+				>
+					<img
+						src={getCoverArtUrl(lightboxImages[lightboxIndex].id, 2048)}
+						alt={lightboxImages[lightboxIndex].label}
+						class="block max-h-[90vh] max-w-[90vw] select-none rounded-none! object-contain"
+						draggable="false"
+					/>
+				</div>
+				{#if lightboxImages.length > 1}
+					<button
+						onclick={nextLightboxImage}
+						disabled={lightboxIndex === lightboxImages.length - 1}
+						class="shrink-0 rounded-full bg-zinc-800/80 p-2 text-zinc-300 transition-colors hover:bg-zinc-700 disabled:opacity-30 disabled:cursor-not-allowed"
+						aria-label="Next image"
+					>
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+					</button>
+				{/if}
 			</div>
+			{#if lightboxImages.length > 1}
+				<p class="text-xs text-zinc-400 select-none">
+					{lightboxImages[lightboxIndex].label}
+					· ({lightboxIndex + 1} / {lightboxImages.length})
+				</p>
+			{/if}
 			{#if showHint}
 				<p class="text-xs text-zinc-500 select-none">
 					Click to zoom · Scroll to zoom · Drag to pan · Click outside to close

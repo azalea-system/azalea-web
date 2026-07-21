@@ -16,6 +16,8 @@ let playing = $state(false);
 let currentTime = $state(0);
 let duration = $state(0);
 let targetVolume = $state(1);
+let muted = $state(false);
+let lastNonZeroVolume = $state(0.5);
 let audioElement: HTMLAudioElement | null = null;
 
 let sourceRemaining: Song[] = [];
@@ -173,7 +175,56 @@ export function getVolume() {
 export function setVolume(v: number) {
 	targetVolume = v;
 	if (audioElement) audioElement.volume = v;
+	if (v > 0) {
+		lastNonZeroVolume = v;
+		muted = false;
+	}
+	saveVolumeState();
 }
+export function getMuted() {
+	return muted;
+}
+export function setMuted(v: boolean) {
+	muted = v;
+	if (audioElement) {
+		if (v) {
+			if (targetVolume > 0) lastNonZeroVolume = targetVolume;
+			audioElement.volume = 0;
+		} else {
+			audioElement.volume = lastNonZeroVolume || 0.5;
+			targetVolume = lastNonZeroVolume || 0.5;
+		}
+	}
+	saveVolumeState();
+}
+export function toggleMute() {
+	setMuted(!muted);
+}
+export function getLastNonZeroVolume() {
+	return lastNonZeroVolume;
+}
+
+function saveVolumeState() {
+	try {
+		localStorage.setItem(
+			'azalea_volume',
+			JSON.stringify({ targetVolume, muted, lastNonZeroVolume })
+		);
+	} catch {}
+}
+
+function loadVolumeState() {
+	try {
+		const raw = localStorage.getItem('azalea_volume');
+		if (!raw) return;
+		const obj = JSON.parse(raw);
+		if (typeof obj.targetVolume === 'number') targetVolume = obj.targetVolume;
+		if (typeof obj.muted === 'boolean') muted = obj.muted;
+		if (typeof obj.lastNonZeroVolume === 'number') lastNonZeroVolume = obj.lastNonZeroVolume;
+	} catch {}
+}
+
+loadVolumeState();
 
 function ensureAudioLoaded(): boolean {
 	if (!audioElement || !currentTrack) return false;
@@ -261,7 +312,7 @@ export function setAudioElement(el: HTMLAudioElement) {
 	(audioElement as any)._azalea_onTimeUpdate = onTimeUpdate;
 	audioElement.addEventListener('timeupdate', onTimeUpdate);
 
-	audioElement.volume = targetVolume;
+	audioElement.volume = muted ? 0 : targetVolume;
 
 	if (currentTrack) {
 		ensureAudioLoaded();
@@ -280,7 +331,10 @@ function serializeState() {
 		nextFromAlbum,
 		nextFromLabel,
 		nextUp,
-		nextUpLabel
+		nextUpLabel,
+		targetVolume,
+		muted,
+		lastNonZeroVolume
 	};
 }
 function saveState() {
@@ -315,6 +369,9 @@ function loadState() {
 		if (Array.isArray(obj.nextUp)) nextUp = obj.nextUp;
 		if (typeof obj.nextFromLabel === 'string') nextFromLabel = obj.nextFromLabel;
 		if (typeof obj.nextUpLabel === 'string') nextUpLabel = obj.nextUpLabel;
+		if (typeof obj.targetVolume === 'number') targetVolume = obj.targetVolume;
+		if (typeof obj.muted === 'boolean') muted = obj.muted;
+		if (typeof obj.lastNonZeroVolume === 'number') lastNonZeroVolume = obj.lastNonZeroVolume;
 	} catch (e) {
 		console.error('Failed to load player state from localStorage:', e);
 	}

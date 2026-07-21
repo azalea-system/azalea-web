@@ -265,6 +265,11 @@
 				{/if}
 			{/if}
 		</div>
+		{#if artist.biography}
+			<div class="mb-6 rounded-lg bg-zinc-800/50 p-4">
+				<p class="text-sm leading-relaxed text-zinc-300 whitespace-pre-line">{artist.biography}</p>
+			</div>
+		{/if}
 		<Albums albums={artist.album ?? []} showSongCount={true} oncontextmenu={handleAlbumContext} />
 	{/if}
 </div>

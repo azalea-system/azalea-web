@@ -11,7 +11,9 @@
 		Menu,
 		Copy,
 		ListPlus,
-		ListMusic
+		ListMusic,
+		Heart,
+		Star
 	} from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import {
@@ -22,6 +24,8 @@
 		setDuration,
 		getVolume,
 		setVolume,
+		getMuted,
+		toggleMute as storeToggleMute,
 		getCurrentTrack,
 		setAudioElement,
 		togglePlay,
@@ -40,7 +44,8 @@
 		clearToastMessage
 	} from '$lib/stores/player.svelte';
 	import { goto } from '$app/navigation';
-	import { getCoverArtUrl, getBase, getAlbum } from '$lib/api';
+	import { getFavouriteSongStyle } from '$lib/stores/settings.svelte';
+	import { getCoverArtUrl, getBase, getAlbum, toggleStar } from '$lib/api';
 	import ContextMenu from '$lib/components/ContextMenu.svelte';
 	import LyricsSidebar from '$lib/components/LyricsDrawer.svelte';
 	import MobileFullPlayer from '$lib/components/MobileFullPlayer.svelte';
@@ -54,6 +59,7 @@
 	let audioEl: HTMLAudioElement;
 	let repeatMode = $derived(getRepeatMode());
 	let shuffleMode = $derived(getShuffleMode());
+	let favStyle = $derived(getFavouriteSongStyle());
 	let rafId: number | null = null;
 
 	function onLoadedMetadata() {
@@ -90,17 +96,10 @@
 	let currentTime = $derived(getCurrentTime());
 	let duration = $derived(getDuration());
 	let volume = $derived(getVolume());
-
-	let lastNonZeroVolume = $state<number>(0.5);
+	let mutedState = $derived(getMuted());
 
 	function toggleMute() {
-		const v = volume ?? 0;
-		if (v > 0) {
-			lastNonZeroVolume = v;
-			setVolume(0);
-		} else {
-			setVolume(lastNonZeroVolume || 0.5);
-		}
+		storeToggleMute();
 	}
 
 	$effect(() => {
@@ -434,6 +433,18 @@
 				{/if}
 			</p>
 		</div>
+		<button
+			onclick={() => {
+				if (currentTrack) toggleStar(currentTrack);
+			}}
+			class="px-1 py-1 rounded-3xl! font-bold flex gap-1 justify-center items-center w-8 h-8 hover:bg-zinc-800"
+		>
+			{#if favStyle === 'heart'}
+				<Heart class="w-4" fill={currentTrack?.starred ? 'currentColor' : 'none'} />
+			{:else}
+				<Star class="w-4" fill={currentTrack?.starred ? 'currentColor' : 'none'} />
+			{/if}</button
+		>
 	</div>
 
 	<div class="flex flex-1 flex-col items-center gap-1">
@@ -586,7 +597,7 @@
 				variant="ghost"
 				aria-label="Toggle mute"
 			>
-				{#if volume === 0}
+				{#if mutedState || volume === 0}
 					<VolumeX class="h-full! w-full!" />
 				{:else}
 					<Volume2 class="h-full! w-full!" />

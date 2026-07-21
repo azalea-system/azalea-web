@@ -6,6 +6,7 @@ export interface Artist {
 	sortName: string;
 	album?: Album[];
 	inceptionYear?: string;
+	biography?: string;
 }
 
 export interface Album {
@@ -20,6 +21,7 @@ export interface Album {
 	artist: string;
 	year?: string | null;
 	song?: Song[];
+	extraCoverArt?: { id: string; type: string }[];
 }
 
 export interface Song {
